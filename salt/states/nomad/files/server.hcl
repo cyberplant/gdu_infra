@@ -11,6 +11,10 @@ server {
 
 client {
   enabled = true
+  
+  # Para OpenVZ: especificar interfaz de red manualmente
+  # Si no funciona con venet0, cambiar a eth0 o la interfaz correcta
+  network_interface = "venet0"
 
   host_volume "traefik-certs" {
     path      = "/var/lib/gdu/traefik-certs"
