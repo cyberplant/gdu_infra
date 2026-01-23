@@ -72,9 +72,9 @@ if ! command -v salt-call &> /dev/null; then
         # Instalar dependencias de Python para Salt
         apt-get install -y python3 python3-pip python3-venv
         
-        # Instalar Salt via pip (más confiable que repos)
-        log_info "Instalando Salt via pip..."
-        pip3 install --break-system-packages salt || pip3 install salt
+        # Instalar Salt 3006 via pip (compatible con Python 3.8)
+        log_info "Instalando Salt 3006 via pip..."
+        pip3 install --break-system-packages 'salt==3006.9' || pip3 install 'salt==3006.9'
         
         # Crear directorios necesarios
         mkdir -p /etc/salt/minion.d
