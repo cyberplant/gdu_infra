@@ -69,26 +69,29 @@ log_info "Instalando Salt..."
 
 if ! command -v salt-call &> /dev/null; then
     if [[ "$OS" == "debian" ]]; then
-        # Instalar Salt desde repo oficial
-        curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | gpg --dearmor -o /etc/apt/keyrings/salt-archive-keyring.gpg
+        # Instalar Salt usando el script oficial de bootstrap
+        # Este método es más confiable que agregar repos manualmente
+        log_info "Descargando bootstrap de Salt..."
+        curl -fsSL -o /tmp/bootstrap-salt.sh https://bootstrap.saltproject.io
         
-        # Detectar versión de Debian/Ubuntu
-        if [[ -f /etc/os-release ]]; then
-            . /etc/os-release
-            CODENAME=$VERSION_CODENAME
-        fi
+        # Instalar Salt en modo masterless (-P para pip dependencies, -X para no iniciar servicio)
+        log_info "Ejecutando instalador de Salt..."
+        sh /tmp/bootstrap-salt.sh -X stable
         
-        echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring.gpg] https://packages.broadcom.com/artifactory/saltproject-deb stable main" > /etc/apt/sources.list.d/salt.list
-        
-        apt-get update
-        apt-get install -y salt-minion
+        rm -f /tmp/bootstrap-salt.sh
     fi
     
     # Deshabilitar servicio salt-minion (usamos masterless)
-    systemctl stop salt-minion || true
-    systemctl disable salt-minion || true
+    systemctl stop salt-minion 2>/dev/null || true
+    systemctl disable salt-minion 2>/dev/null || true
 else
     log_info "Salt ya está instalado"
+fi
+
+# Verificar que Salt se instaló correctamente
+if ! command -v salt-call &> /dev/null; then
+    log_error "Salt no se instaló correctamente"
+    exit 1
 fi
 
 # ============================================
