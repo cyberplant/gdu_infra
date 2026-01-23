@@ -63,27 +63,24 @@ if [[ "$OS" == "debian" ]]; then
 fi
 
 # ============================================
-# 2. Instalar Salt minion
+# 2. Instalar Salt minion via pip
 # ============================================
 log_info "Instalando Salt..."
 
 if ! command -v salt-call &> /dev/null; then
     if [[ "$OS" == "debian" ]]; then
-        # Instalar Salt usando el script oficial de bootstrap
-        # Este método es más confiable que agregar repos manualmente
-        log_info "Descargando bootstrap de Salt..."
-        curl -fsSL -o /tmp/bootstrap-salt.sh https://bootstrap.saltproject.io
+        # Instalar dependencias de Python para Salt
+        apt-get install -y python3 python3-pip python3-venv
         
-        # Instalar Salt en modo masterless (-P para pip dependencies, -X para no iniciar servicio)
-        log_info "Ejecutando instalador de Salt..."
-        sh /tmp/bootstrap-salt.sh -X stable
+        # Instalar Salt via pip (más confiable que repos)
+        log_info "Instalando Salt via pip..."
+        pip3 install --break-system-packages salt || pip3 install salt
         
-        rm -f /tmp/bootstrap-salt.sh
+        # Crear directorios necesarios
+        mkdir -p /etc/salt/minion.d
+        mkdir -p /var/cache/salt
+        mkdir -p /var/log/salt
     fi
-    
-    # Deshabilitar servicio salt-minion (usamos masterless)
-    systemctl stop salt-minion 2>/dev/null || true
-    systemctl disable salt-minion 2>/dev/null || true
 else
     log_info "Salt ya está instalado"
 fi
