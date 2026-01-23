@@ -133,15 +133,69 @@ salt-call --local state.apply base.firewall
 log_info "Instalando Nomad..."
 salt-call --local state.apply nomad.install
 
+# Agregar /usr/local/bin al PATH para este script
+export PATH=$PATH:/usr/local/bin
+
 # ============================================
 # 6. Configurar secrets de Nomad
 # ============================================
 log_info "Configurando secrets..."
 
-# Verificar si hay secrets configurados
-if [[ ! -f /srv/gdu_infra/salt/pillar/secrets.sls ]]; then
-    log_warn "No se encontró secrets.sls - los jobs usarán passwords por defecto"
-    log_warn "Crear /srv/gdu_infra/salt/pillar/secrets.sls antes de producción"
+# Esperar a que Nomad esté listo
+log_info "Esperando a que Nomad esté listo..."
+for i in {1..30}; do
+    if nomad status &>/dev/null; then
+        break
+    fi
+    sleep 2
+done
+
+# Generar passwords random si no existen
+SECRETS_FILE="/root/.gdu_secrets"
+if [[ ! -f "$SECRETS_FILE" ]]; then
+    log_info "Generando passwords random..."
+    
+    POSTGRES_ROOT_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
+    GDU_USUARIOS_DB_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
+    GDU_PROVEEDORES_DB_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
+    DJANGO_SECRET_USUARIOS=$(openssl rand -base64 64 | tr -dc 'a-zA-Z0-9' | head -c 50)
+    DJANGO_SECRET_PROVEEDORES=$(openssl rand -base64 64 | tr -dc 'a-zA-Z0-9' | head -c 50)
+    GRAFANA_PASS=$(openssl rand -base64 16 | tr -dc 'a-zA-Z0-9' | head -c 16)
+    
+    # Guardar en archivo (solo root puede leer)
+    cat > "$SECRETS_FILE" <<EOF
+POSTGRES_ROOT_PASS=$POSTGRES_ROOT_PASS
+GDU_USUARIOS_DB_PASS=$GDU_USUARIOS_DB_PASS
+GDU_PROVEEDORES_DB_PASS=$GDU_PROVEEDORES_DB_PASS
+DJANGO_SECRET_USUARIOS=$DJANGO_SECRET_USUARIOS
+DJANGO_SECRET_PROVEEDORES=$DJANGO_SECRET_PROVEEDORES
+GRAFANA_PASS=$GRAFANA_PASS
+EOF
+    chmod 600 "$SECRETS_FILE"
+    
+    # Guardar en Nomad Variables
+    log_info "Configurando secrets en Nomad..."
+    
+    nomad var put nomad/jobs/postgres \
+        postgres_password="$POSTGRES_ROOT_PASS" \
+        gdu_usuarios_password="$GDU_USUARIOS_DB_PASS" \
+        gdu_proveedores_password="$GDU_PROVEEDORES_DB_PASS"
+    
+    nomad var put nomad/jobs/gdu-usuarios \
+        db_password="$GDU_USUARIOS_DB_PASS" \
+        django_secret_key="$DJANGO_SECRET_USUARIOS"
+    
+    nomad var put nomad/jobs/gdu-portal-proveedores \
+        db_password="$GDU_PROVEEDORES_DB_PASS" \
+        django_secret_key="$DJANGO_SECRET_PROVEEDORES"
+    
+    nomad var put nomad/jobs/monitoring \
+        grafana_admin_password="$GRAFANA_PASS"
+    
+    log_info "Secrets guardados en $SECRETS_FILE y Nomad Variables"
+else
+    log_info "Secrets ya existen en $SECRETS_FILE - no se regeneran"
+    source "$SECRETS_FILE"
 fi
 
 # Login a ghcr.io si hay token
@@ -182,15 +236,10 @@ echo -e "${GREEN}       Bootstrap completado!${NC}"
 echo -e "${GREEN}============================================${NC}"
 echo ""
 echo "Próximos pasos:"
-echo "  1. Configurar secrets de Nomad:"
-echo "     nomad var put nomad/jobs/postgres postgres_password=TU_PASSWORD"
-echo "     nomad var put nomad/jobs/gdu-usuarios db_password=X django_secret_key=Y"
-echo "     nomad var put nomad/jobs/gdu-portal-proveedores db_password=X django_secret_key=Y"
-echo ""
-echo "  2. Login a ghcr.io (si no se hizo):"
+echo "  1. Login a ghcr.io:"
 echo "     echo 'TOKEN' | docker login ghcr.io -u cyberplant --password-stdin"
 echo ""
-echo "  3. Re-desplegar jobs si es necesario:"
+echo "  2. Re-desplegar jobs si es necesario:"
 echo "     nomad job run /srv/gdu_infra/nomad/NOMBRE.nomad"
 echo ""
 echo "Dominios configurados:"
