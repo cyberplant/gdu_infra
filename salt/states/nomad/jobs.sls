@@ -1,6 +1,12 @@
 # Despliegue de jobs Nomad
 # Requiere que Nomad esté instalado y corriendo
 
+# Verificar que Nomad está corriendo antes de desplegar jobs
+check_nomad_running:
+  cmd.run:
+    - name: /usr/local/bin/nomad status
+    - timeout: 10
+
 nomad_jobs_dir:
   file.directory:
     - name: /srv/gdu_infra/nomad
@@ -18,17 +24,17 @@ nomad_job_{{ job }}:
 # Desplegar Traefik primero (reverse proxy)
 deploy_traefik:
   cmd.run:
-    - name: nomad job run /srv/gdu_infra/nomad/traefik.nomad
-    - unless: nomad job status traefik 2>/dev/null | grep -q "Status.*running"
+    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/traefik.nomad
+    - unless: /usr/local/bin/nomad job status traefik 2>/dev/null | grep -q "Status.*running"
     - require:
-      - sls: nomad.install
+      - cmd: check_nomad_running
       - file: nomad_job_traefik
 
 # Desplegar PostgreSQL
 deploy_postgres:
   cmd.run:
-    - name: nomad job run /srv/gdu_infra/nomad/postgres.nomad
-    - unless: nomad job status postgres 2>/dev/null | grep -q "Status.*running"
+    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/postgres.nomad
+    - unless: /usr/local/bin/nomad job status postgres 2>/dev/null | grep -q "Status.*running"
     - require:
       - cmd: deploy_traefik
       - file: nomad_job_postgres
@@ -38,7 +44,7 @@ wait_postgres:
   cmd.run:
     - name: |
         for i in $(seq 1 30); do
-          if nc -z 127.0.0.1 5432 2>/dev/null; then
+          if nc -z 127.0.0.1 5433 2>/dev/null; then
             exit 0
           fi
           sleep 2
@@ -51,7 +57,7 @@ wait_postgres:
 # Inicializar bases de datos
 deploy_postgres_init:
   cmd.run:
-    - name: nomad job run /srv/gdu_infra/nomad/postgres-init.nomad
+    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/postgres-init.nomad
     - require:
       - cmd: wait_postgres
       - file: nomad_job_postgres-init
@@ -59,16 +65,16 @@ deploy_postgres_init:
 # Desplegar aplicaciones Django
 deploy_gdu_usuarios:
   cmd.run:
-    - name: nomad job run /srv/gdu_infra/nomad/gdu-usuarios.nomad
-    - unless: nomad job status gdu-usuarios 2>/dev/null | grep -q "Status.*running"
+    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/gdu-usuarios.nomad
+    - unless: /usr/local/bin/nomad job status gdu-usuarios 2>/dev/null | grep -q "Status.*running"
     - require:
       - cmd: deploy_postgres_init
       - file: nomad_job_gdu-usuarios
 
 deploy_gdu_proveedores:
   cmd.run:
-    - name: nomad job run /srv/gdu_infra/nomad/gdu-portal-proveedores.nomad
-    - unless: nomad job status gdu-portal-proveedores 2>/dev/null | grep -q "Status.*running"
+    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/gdu-portal-proveedores.nomad
+    - unless: /usr/local/bin/nomad job status gdu-portal-proveedores 2>/dev/null | grep -q "Status.*running"
     - require:
       - cmd: deploy_postgres_init
       - file: nomad_job_gdu-portal-proveedores
@@ -76,8 +82,8 @@ deploy_gdu_proveedores:
 # Desplegar monitoreo
 deploy_monitoring:
   cmd.run:
-    - name: nomad job run /srv/gdu_infra/nomad/monitoring.nomad
-    - unless: nomad job status monitoring 2>/dev/null | grep -q "Status.*running"
+    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/monitoring.nomad
+    - unless: /usr/local/bin/nomad job status monitoring 2>/dev/null | grep -q "Status.*running"
     - require:
       - cmd: deploy_traefik
       - file: nomad_job_monitoring
