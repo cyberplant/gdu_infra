@@ -8,7 +8,7 @@
 # O manualmente:
 #   sudo bash bootstrap.sh
 
-set -uo pipefail
+set -euo pipefail
 
 # Colores para output
 RED='\033[0;31m'
@@ -18,7 +18,10 @@ NC='\033[0m' # No Color
 
 log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
+
+# Trap para mostrar línea de error
+trap 'log_error "Error en línea $LINENO. Comando: $BASH_COMMAND"' ERR
 
 # Verificar que se ejecuta como root
 if [[ $EUID -ne 0 ]]; then
