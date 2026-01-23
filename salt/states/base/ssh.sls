@@ -7,10 +7,11 @@ sshd_config:
     - mode: 644
     - contents: |
         # Configuración de seguridad SSH - gestionado por Salt
-        Port {{ ssh_config.get('port', 22) }}
-        PermitRootLogin {{ ssh_config.get('permit_root_login', 'prohibit-password') }}
-        PasswordAuthentication {{ ssh_config.get('password_authentication', 'no') }}
-        PubkeyAuthentication {{ ssh_config.get('pubkey_authentication', 'yes') }}
+        Port 999
+        Port 7822
+        PermitRootLogin prohibit-password
+        PasswordAuthentication no
+        PubkeyAuthentication yes
         ChallengeResponseAuthentication no
         UsePAM yes
         X11Forwarding no
@@ -22,5 +23,5 @@ sshd_service:
   service.running:
     - name: ssh
     - enable: true
-    - watch:
-      - file: sshd_config
+    # No reiniciar automáticamente para evitar perder conexión
+    # Reiniciar manualmente: systemctl reload ssh
