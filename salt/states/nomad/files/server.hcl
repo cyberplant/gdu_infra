@@ -1,0 +1,70 @@
+# Configuración del servidor Nomad
+# Gestionado por Salt
+
+datacenter = "dc1"
+data_dir   = "/var/lib/nomad"
+
+server {
+  enabled          = true
+  bootstrap_expect = 1
+}
+
+client {
+  enabled = true
+
+  host_volume "traefik-certs" {
+    path      = "/var/lib/gdu/traefik-certs"
+    read_only = false
+  }
+
+  host_volume "postgres-usuarios" {
+    path      = "/var/lib/gdu/postgres-usuarios"
+    read_only = false
+  }
+
+  host_volume "postgres-proveedores" {
+    path      = "/var/lib/gdu/postgres-proveedores"
+    read_only = false
+  }
+
+  host_volume "gdu-usuarios-media" {
+    path      = "/var/lib/gdu/usuarios-media"
+    read_only = false
+  }
+
+  host_volume "gdu-proveedores-media" {
+    path      = "/var/lib/gdu/proveedores-media"
+    read_only = false
+  }
+
+  host_volume "prometheus-data" {
+    path      = "/var/lib/gdu/prometheus"
+    read_only = false
+  }
+
+  host_volume "grafana-data" {
+    path      = "/var/lib/gdu/grafana"
+    read_only = false
+  }
+}
+
+plugin "docker" {
+  config {
+    allow_privileged = false
+    
+    volumes {
+      enabled = true
+    }
+
+    auth {
+      config = "/root/.docker/config.json"
+    }
+  }
+}
+
+telemetry {
+  prometheus_metrics         = true
+  disable_hostname           = true
+  publish_allocation_metrics = true
+  publish_node_metrics       = true
+}

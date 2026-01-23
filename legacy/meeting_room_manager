@@ -1,0 +1,48 @@
+upstream meeting_room_manager {
+    #server localhost:7999;
+    server localhost:8001;
+}
+
+server {
+    if ($host = gduprod.roar.uy) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    if ($host = gestiones.portalgdu.com.uy) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+    
+    listen 80;
+    listen [::]:80;
+    server_name gestiones.portalgdu.com.uy gduprod.roar.uy;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+
+    listen 443 ssl; # managed by Certbot
+    server_name gestiones.portalgdu.com.uy gduprod.roar.uy;
+    ssl_certificate /etc/letsencrypt/live/proveedores.gdu.uy/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/proveedores.gdu.uy/privkey.pem; # managed by Certbot
+    # include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+    client_max_body_size 20M;
+
+    location / {
+        proxy_pass http://meeting_room_manager;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+        proxy_redirect off;
+    }
+
+    location /static/ {
+        alias /var/www/static/mrm/;
+    }
+
+    location /media/ {
+        alias /var/www/static/mrm-media/;
+    }
+
+
+}

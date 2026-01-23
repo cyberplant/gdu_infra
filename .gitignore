@@ -1,0 +1,29 @@
+# Secrets - nunca commitear
+**/secrets.yaml
+**/secrets/*.yaml
+*.secret
+.env
+.env.*
+salt/pillar/secrets.sls
+
+# Salt
+*.pyc
+__pycache__/
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
+# Backups
+*.bak
+*.backup
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

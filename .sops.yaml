@@ -1,0 +1,27 @@
+# Configuración SOPS para encriptar secrets
+# 
+# Instalación:
+#   brew install sops age
+#
+# Generar clave (una vez):
+#   mkdir -p ~/.config/sops/age
+#   age-keygen -o ~/.config/sops/age/keys.txt
+#
+# La clave pública se pone abajo, la privada queda en tu máquina
+# y en el servidor en /root/.config/sops/age/keys.txt
+#
+# Uso:
+#   sops secrets.yaml          # Editar encriptado
+#   sops -d secrets.yaml       # Desencriptar a stdout
+#   sops -e secrets.yaml       # Encriptar
+
+creation_rules:
+  # Archivos de secrets en k8s
+  - path_regex: k8s/.*/secrets\.yaml$
+    age: >-
+      age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  
+  # Pillar secrets de Salt
+  - path_regex: salt/pillar/secrets\.sls$
+    age: >-
+      age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
