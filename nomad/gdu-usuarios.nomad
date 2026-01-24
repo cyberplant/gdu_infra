@@ -22,7 +22,7 @@ job "gdu-usuarios" {
       config {
         image   = "busybox:1.36"
         command = "sh"
-        args    = ["-c", "START=$(date +%s); while ! nc -z 127.0.0.1 5433 2>/dev/null; do ELAPSED=$(($(date +%s) - START)); echo \"[$(date '+%H:%M:%S')] Esperando PostgreSQL... (${ELAPSED}s)\"; sleep 2; done; echo \"[$(date '+%H:%M:%S')] PostgreSQL disponible!\""]
+        args    = ["-c", "i=0; while ! nc -z 127.0.0.1 5433 2>/dev/null; do echo \"Esperando PostgreSQL... ($i s)\"; i=$((i+2)); sleep 2; done; echo \"PostgreSQL disponible!\""]
 
         network_mode = "host"
       }
