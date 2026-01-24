@@ -22,7 +22,8 @@ job "gdu-usuarios" {
       config {
         image   = "busybox:1.36"
         command = "sh"
-        args    = ["-c", "until nc -z 127.0.0.1 5433; do echo 'Esperando PostgreSQL...'; sleep 2; done"]
+        args    = ["-c", "START=$(date +%s); while ! nc -z 127.0.0.1 5433 2>/dev/null; do ELAPSED=$(($(date +%s) - START)); echo \"[$(date '+%H:%M:%S')] Esperando PostgreSQL... (${ELAPSED}s)\"; sleep 2; done; echo \"[$(date '+%H:%M:%S')] PostgreSQL disponible!\""]
+
         network_mode = "host"
       }
 
@@ -51,7 +52,7 @@ job "gdu-usuarios" {
         destination = "secrets/app.env"
         env         = true
         data        = <<-EOF
-        DJANGO_SETTINGS_MODULE=config.settings.production
+        DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
         DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,localhost
         DATABASE_HOST=127.0.0.1
         DATABASE_PORT=5433
@@ -91,7 +92,7 @@ job "gdu-usuarios" {
         destination = "secrets/app.env"
         env         = true
         data        = <<-EOF
-        DJANGO_SETTINGS_MODULE=config.settings.production
+        DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
         DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,localhost
         DATABASE_HOST=127.0.0.1
         DATABASE_PORT=5433
