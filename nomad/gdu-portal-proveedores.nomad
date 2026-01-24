@@ -53,13 +53,17 @@ job "gdu-portal-proveedores" {
         data        = <<-EOF
         DJANGO_SETTINGS_MODULE=portal_proveedores.settings
         DJANGO_ALLOWED_HOSTS=proveedores.gdu.uy,proveedores.portalgdu.com.uy,localhost
-        DATABASE_HOST=127.0.0.1
-        DATABASE_PORT=5433
-        DATABASE_NAME=gdu_portal_proveedores
-        DATABASE_USER=gdu_portal_proveedores
+        DB_ENGINE=django.db.backends.postgresql
+        DB_HOST=127.0.0.1
+        DB_PORT=5433
+        DB_NAME=gdu_portal_proveedores
+        DB_USER=gdu_portal_proveedores
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
-        DATABASE_PASSWORD={{ .db_password }}
+        DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
+        {{ else }}
+        DB_PASSWORD=CAMBIAR_PASSWORD
+        DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
         OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
