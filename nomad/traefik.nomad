@@ -100,16 +100,37 @@ job "traefik" {
             # ============================================
             # SISTEMAS NUEVOS (Nomad) - ACTIVOS
             # ============================================
-            gdu-auth:
-              rule: "Host(`auth.proveedores.gdu.uy`)"
+
+            # gdu-usuarios completo
+            gdu-usuarios:
+              rule: "Host(`usuarios.portalgdu.com.uy`)"
               service: gdu-usuarios
               entryPoints:
                 - https
               tls:
                 certResolver: letsencrypt
 
+            # Solo el path /o para OAuth/auth
             gdu-auth-portal:
-              rule: "Host(`auth.portalgdu.com.uy`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && PathPrefix(`/o`)"
+              service: gdu-usuarios
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            # gdu-portal-proveedores
+            gdu-proveedores-new:
+              rule: "Host(`proveedores.portalgdu.com.uy`)"
+              service: gdu-portal-proveedores
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            # OAuth en dominio legacy
+            gdu-auth-legacy:
+              rule: "Host(`auth.proveedores.gdu.uy`)"
               service: gdu-usuarios
               entryPoints:
                 - https
@@ -118,32 +139,7 @@ job "traefik" {
 
             # ============================================
             # SISTEMAS NUEVOS (Nomad) - PENDIENTES
-            # Descomentar cuando los dominios estén configurados
             # ============================================
-            # gdu-usuarios:
-            #   rule: "Host(`usuarios.portalgdu.com.uy`)"
-            #   service: gdu-usuarios
-            #   entryPoints:
-            #     - https
-            #   tls:
-            #     certResolver: letsencrypt
-            #
-            # gdu-auth:
-            #   rule: "Host(`auth.portalgdu.com.uy`)"
-            #   service: gdu-usuarios
-            #   entryPoints:
-            #     - https
-            #   tls:
-            #     certResolver: letsencrypt
-            #
-            # gdu-proveedores-new:
-            #   rule: "Host(`proveedores.portalgdu.com.uy`)"
-            #   service: gdu-portal-proveedores
-            #   entryPoints:
-            #     - https
-            #   tls:
-            #     certResolver: letsencrypt
-            #
             # grafana:
             #   rule: "Host(`grafana.portalgdu.com.uy`)"
             #   service: grafana
