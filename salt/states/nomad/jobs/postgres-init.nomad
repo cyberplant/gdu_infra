@@ -27,7 +27,7 @@ job "postgres-init" {
           
           -- Base de datos para gdu_proveedores
           SELECT 'CREATE DATABASE gdu_proveedores' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'gdu_proveedores')\gexec
-          SELECT 'CREATE USER gdu_proveedores WITH PASSWORD ''$GDU_PROVEEDORES_PASSWORD''' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'gdu_proveedores')\gexec
+          SELECT 'CREATE USER gdu_proveedores WITH PASSWORD ''$GDU_PORTAL_PROVEEDORES_PASSWORD''' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'gdu_proveedores')\gexec
           GRANT ALL PRIVILEGES ON DATABASE gdu_proveedores TO gdu_proveedores;
           ALTER DATABASE gdu_proveedores OWNER TO gdu_proveedores;
           
@@ -47,11 +47,11 @@ job "postgres-init" {
         {{ with nomadVar "nomad/jobs/postgres" }}
         POSTGRES_PASSWORD={{ .postgres_password }}
         GDU_USUARIOS_PASSWORD={{ .gdu_usuarios_password }}
-        GDU_PROVEEDORES_PASSWORD={{ .gdu_proveedores_password }}
+        GDU_PORTAL_PROVEEDORES_PASSWORD={{ .gdu_proveedores_password }}
         {{ else }}
         POSTGRES_PASSWORD=CAMBIAR_PASSWORD_POSTGRES
         GDU_USUARIOS_PASSWORD=CAMBIAR_PASSWORD_USUARIOS
-        GDU_PROVEEDORES_PASSWORD=CAMBIAR_PASSWORD_PROVEEDORES
+        GDU_PORTAL_PROVEEDORES_PASSWORD=CAMBIAR_PASSWORD_PROVEEDORES
         {{ end }}
         EOF
       }

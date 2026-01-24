@@ -50,7 +50,7 @@ create_gdu_portal_proveedores_user:
     - name: |
         source {{ secrets_file }}
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -p 5433 -c "CREATE USER gdu_portal_proveedores WITH PASSWORD '$GDU_PROVEEDORES_DB_PASS';" 2>/dev/null || true
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -c "CREATE USER gdu_portal_proveedores WITH PASSWORD '$GDU_PORTAL_PROVEEDORES_DB_PASS';" 2>/dev/null || true
     - require:
       - cmd: wait_for_postgres
     - unless: |

@@ -160,7 +160,7 @@ if [[ ! -f "$SECRETS_FILE" ]]; then
     
     POSTGRES_ROOT_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
     GDU_USUARIOS_DB_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
-    GDU_PROVEEDORES_DB_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
+    GDU_PORTAL_PROVEEDORES_DB_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
     DJANGO_SECRET_USUARIOS=$(openssl rand -base64 64 | tr -dc 'a-zA-Z0-9' | head -c 50)
     DJANGO_SECRET_PROVEEDORES=$(openssl rand -base64 64 | tr -dc 'a-zA-Z0-9' | head -c 50)
     GRAFANA_PASS=$(openssl rand -base64 16 | tr -dc 'a-zA-Z0-9' | head -c 16)
@@ -169,7 +169,7 @@ if [[ ! -f "$SECRETS_FILE" ]]; then
     cat > "$SECRETS_FILE" <<EOF
 POSTGRES_ROOT_PASS=$POSTGRES_ROOT_PASS
 GDU_USUARIOS_DB_PASS=$GDU_USUARIOS_DB_PASS
-GDU_PROVEEDORES_DB_PASS=$GDU_PROVEEDORES_DB_PASS
+GDU_PORTAL_PROVEEDORES_DB_PASS=$GDU_PORTAL_PROVEEDORES_DB_PASS
 DJANGO_SECRET_USUARIOS=$DJANGO_SECRET_USUARIOS
 DJANGO_SECRET_PROVEEDORES=$DJANGO_SECRET_PROVEEDORES
 GRAFANA_PASS=$GRAFANA_PASS
@@ -186,14 +186,14 @@ log_info "Configurando secrets en Nomad Variables..."
 nomad var put nomad/jobs/postgres \
     postgres_password="$POSTGRES_ROOT_PASS" \
     gdu_usuarios_password="$GDU_USUARIOS_DB_PASS" \
-    gdu_proveedores_password="$GDU_PROVEEDORES_DB_PASS"
+    gdu_proveedores_password="$GDU_PORTAL_PROVEEDORES_DB_PASS"
 
 nomad var put nomad/jobs/gdu-usuarios \
     db_password="$GDU_USUARIOS_DB_PASS" \
     django_secret_key="$DJANGO_SECRET_USUARIOS"
 
 nomad var put nomad/jobs/gdu-portal-proveedores \
-    db_password="$GDU_PROVEEDORES_DB_PASS" \
+    db_password="$GDU_PORTAL_PROVEEDORES_DB_PASS" \
     django_secret_key="$DJANGO_SECRET_PROVEEDORES"
 
 nomad var put nomad/jobs/monitoring \

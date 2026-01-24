@@ -97,7 +97,7 @@ systemctl start nomad
 nomad var put nomad/jobs/postgres \
   postgres_password="PASSWORD_ROOT" \
   gdu_usuarios_password="PASSWORD_USUARIOS" \
-  gdu_proveedores_password="PASSWORD_PROVEEDORES"
+  gdu_portal_proveedores_password="PASSWORD_PROVEEDORES"
 
 # gdu-usuarios
 nomad var put nomad/jobs/gdu-usuarios \
