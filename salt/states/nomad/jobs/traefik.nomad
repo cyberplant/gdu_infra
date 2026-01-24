@@ -17,17 +17,8 @@ job "traefik" {
       }
     }
 
-    service {
-      name = "traefik"
-      port = "http"
-
-      check {
-        type     = "http"
-        path     = "/ping"
-        interval = "10s"
-        timeout  = "2s"
-      }
-    }
+    # No usamos service discovery (requiere Consul)
+    # Los health checks se hacen via Traefik ping endpoint
 
     task "traefik" {
       driver = "docker"
@@ -39,8 +30,7 @@ job "traefik" {
         volumes = [
           "local/traefik.yml:/etc/traefik/traefik.yml",
           "local/dynamic:/etc/traefik/dynamic",
-          "/var/run/docker.sock:/var/run/docker.sock:ro",
-          "traefik-certs:/letsencrypt"
+          "/var/run/docker.sock:/var/run/docker.sock:ro"
         ]
       }
 
@@ -89,8 +79,29 @@ job "traefik" {
         http:
           routers:
             # ============================================
-            # SISTEMAS NUEVOS (Nomad)
+            # SISTEMAS LEGACY (Docker existente) - ACTIVOS
             # ============================================
+            legacy-proveedores:
+              rule: "Host(`proveedores.gdu.uy`)"
+              service: legacy-portal-gdu
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            legacy-gestiones:
+              rule: "Host(`gestiones.portalgdu.com.uy`)"
+              service: legacy-meeting-room
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            # ============================================
+            # SISTEMAS NUEVOS (Nomad) - ACTIVOS
+            # ============================================
+
+            # gdu-usuarios completo
             gdu-usuarios:
               rule: "Host(`usuarios.portalgdu.com.uy`)"
               service: gdu-usuarios
@@ -99,14 +110,16 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
-            gdu-auth:
-              rule: "Host(`auth.portalgdu.com.uy`)"
+            # Solo el path /o para OAuth/auth
+            gdu-auth-portal:
+              rule: "Host(`auth.portalgdu.com.uy`) && PathPrefix(`/o`)"
               service: gdu-usuarios
               entryPoints:
                 - https
               tls:
                 certResolver: letsencrypt
 
+            # gdu-portal-proveedores
             gdu-proveedores-new:
               rule: "Host(`proveedores.portalgdu.com.uy`)"
               service: gdu-portal-proveedores
@@ -115,32 +128,25 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
-            grafana:
-              rule: "Host(`grafana.portalgdu.com.uy`)"
-              service: grafana
+            # OAuth en dominio legacy
+            gdu-auth-legacy:
+              rule: "Host(`auth.proveedores.gdu.uy`)"
+              service: gdu-usuarios
               entryPoints:
                 - https
               tls:
                 certResolver: letsencrypt
 
             # ============================================
-            # SISTEMAS LEGACY (Docker existente)
+            # SISTEMAS NUEVOS (Nomad) - PENDIENTES
             # ============================================
-            legacy-proveedores:
-              rule: "Host(`proveedores.gdu.uy`) || Host(`www.proveedores.gdu.uy`)"
-              service: legacy-portal-gdu
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
-
-            legacy-gestiones:
-              rule: "Host(`gestiones.portalgdu.com.uy`) || Host(`gduprod.roar.uy`)"
-              service: legacy-meeting-room
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
+            # grafana:
+            #   rule: "Host(`grafana.portalgdu.com.uy`)"
+            #   service: grafana
+            #   entryPoints:
+            #     - https
+            #   tls:
+            #     certResolver: letsencrypt
 
           services:
             # Nuevos servicios (Nomad)
@@ -170,6 +176,12 @@ job "traefik" {
                 servers:
                   - url: "http://127.0.0.1:8001"
         EOF
+      }
+
+      volume_mount {
+        volume      = "traefik-certs"
+        destination = "/letsencrypt"
+        read_only   = false
       }
 
       resources {

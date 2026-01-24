@@ -21,8 +21,8 @@ job "postgres" {
       driver = "docker"
 
       config {
-        image = "postgres:15-alpine"
-        ports = ["db"]
+        image        = "postgres:15-alpine"
+        network_mode = "host"
       }
 
       volume_mount {
@@ -33,6 +33,7 @@ job "postgres" {
 
       env {
         POSTGRES_USER = "postgres"
+        PGPORT        = "5433"
       }
 
       template {
@@ -52,16 +53,7 @@ job "postgres" {
         memory = 512
       }
 
-      service {
-        name = "postgres"
-        port = "db"
-
-        check {
-          type     = "tcp"
-          interval = "10s"
-          timeout  = "2s"
-        }
-      }
+      # No usamos service discovery (requiere Consul)
     }
   }
 }

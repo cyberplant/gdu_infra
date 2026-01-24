@@ -22,7 +22,8 @@ job "gdu-usuarios" {
       config {
         image   = "busybox:1.36"
         command = "sh"
-        args    = ["-c", "until nc -z 127.0.0.1 5433; do echo 'Esperando PostgreSQL...'; sleep 2; done"]
+        args    = ["-c", "i=0; while ! nc -z 127.0.0.1 5433 2>/dev/null; do echo \"Esperando PostgreSQL... ($i s)\"; i=$((i+2)); sleep 2; done; echo \"PostgreSQL disponible!\""]
+
         network_mode = "host"
       }
 
@@ -51,17 +52,18 @@ job "gdu-usuarios" {
         destination = "secrets/app.env"
         env         = true
         data        = <<-EOF
-        DJANGO_SETTINGS_MODULE=config.settings.production
-        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,localhost
-        DATABASE_HOST=127.0.0.1
-        DATABASE_PORT=5433
-        DATABASE_NAME=gdu_usuarios
-        DATABASE_USER=gdu_usuarios
+        DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
+        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,auth.proveedores.gdu.uy,localhost
+        DB_ENGINE=django.db.backends.postgresql
+        DB_HOST=127.0.0.1
+        DB_PORT=5433
+        DB_NAME=gdu_usuarios
+        DB_USER=gdu_usuarios
         {{ with nomadVar "nomad/jobs/gdu-usuarios" }}
-        DATABASE_PASSWORD={{ .db_password }}
+        DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
         {{ else }}
-        DATABASE_PASSWORD=CAMBIAR_PASSWORD
+        DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
@@ -91,17 +93,18 @@ job "gdu-usuarios" {
         destination = "secrets/app.env"
         env         = true
         data        = <<-EOF
-        DJANGO_SETTINGS_MODULE=config.settings.production
-        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,localhost
-        DATABASE_HOST=127.0.0.1
-        DATABASE_PORT=5433
-        DATABASE_NAME=gdu_usuarios
-        DATABASE_USER=gdu_usuarios
+        DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
+        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,auth.proveedores.gdu.uy,localhost
+        DB_ENGINE=django.db.backends.postgresql
+        DB_HOST=127.0.0.1
+        DB_PORT=5433
+        DB_NAME=gdu_usuarios
+        DB_USER=gdu_usuarios
         {{ with nomadVar "nomad/jobs/gdu-usuarios" }}
-        DATABASE_PASSWORD={{ .db_password }}
+        DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
         {{ else }}
-        DATABASE_PASSWORD=CAMBIAR_PASSWORD
+        DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
@@ -114,17 +117,7 @@ job "gdu-usuarios" {
         memory = 512
       }
 
-      service {
-        name = "gdu-usuarios"
-        port = "http"
-
-        check {
-          type     = "http"
-          path     = "/health/"
-          interval = "10s"
-          timeout  = "3s"
-        }
-      }
+      # No usamos service discovery (requiere Consul)
     }
 
   }
