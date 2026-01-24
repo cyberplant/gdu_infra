@@ -17,17 +17,8 @@ job "traefik" {
       }
     }
 
-    service {
-      name = "traefik"
-      port = "http"
-
-      check {
-        type     = "http"
-        path     = "/ping"
-        interval = "10s"
-        timeout  = "2s"
-      }
-    }
+    # No usamos service discovery (requiere Consul)
+    # Los health checks se hacen via Traefik ping endpoint
 
     task "traefik" {
       driver = "docker"
