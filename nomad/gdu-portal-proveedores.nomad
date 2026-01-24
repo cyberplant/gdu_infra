@@ -60,11 +60,10 @@ job "gdu-portal-proveedores" {
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
         DATABASE_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
-        {{ else }}
-        DATABASE_PASSWORD=CAMBIAR_PASSWORD
-        DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
+        OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
+        SOCIAL_AUTH_GDU_USUARIOS_REDIRECT_URI=https://proveedores.portalgdu.com.uy/oauth/complete/gdu-usuarios/
         EOF
       }
 
@@ -96,12 +95,11 @@ job "gdu-portal-proveedores" {
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
         DATABASE_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
-        {{ else }}
-        DATABASE_PASSWORD=CAMBIAR_PASSWORD
-        DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
         PORT=8011
+        OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
+        SOCIAL_AUTH_GDU_USUARIOS_REDIRECT_URI=https://proveedores.portalgdu.com.uy/oauth/complete/gdu-usuarios/
         EOF
       }
 
@@ -110,17 +108,7 @@ job "gdu-portal-proveedores" {
         memory = 512
       }
 
-      service {
-        name = "gdu-portal-proveedores"
-        port = "http"
-
-        check {
-          type     = "http"
-          path     = "/health/"
-          interval = "10s"
-          timeout  = "3s"
-        }
-      }
+      # No usamos service discovery (requiere Consul)
     }
   }
 }
