@@ -30,8 +30,7 @@ job "traefik" {
         volumes = [
           "local/traefik.yml:/etc/traefik/traefik.yml",
           "local/dynamic:/etc/traefik/dynamic",
-          "/var/run/docker.sock:/var/run/docker.sock:ro",
-          "traefik-certs:/letsencrypt"
+          "/var/run/docker.sock:/var/run/docker.sock:ro"
         ]
       }
 
