@@ -114,17 +114,7 @@ job "gdu-usuarios" {
         memory = 512
       }
 
-      service {
-        name = "gdu-usuarios"
-        port = "http"
-
-        check {
-          type     = "http"
-          path     = "/health/"
-          interval = "10s"
-          timeout  = "3s"
-        }
-      }
+      # No usamos service discovery (requiere Consul)
     }
 
   }
