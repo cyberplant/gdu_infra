@@ -98,6 +98,17 @@ job "traefik" {
                 certResolver: letsencrypt
 
             # ============================================
+            # SISTEMAS NUEVOS (Nomad) - ACTIVOS
+            # ============================================
+            gdu-auth:
+              rule: "Host(`auth.proveedores.gdu.uy`)"
+              service: gdu-usuarios
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            # ============================================
             # SISTEMAS NUEVOS (Nomad) - PENDIENTES
             # Descomentar cuando los dominios estén configurados
             # ============================================
