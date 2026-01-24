@@ -175,31 +175,31 @@ DJANGO_SECRET_PROVEEDORES=$DJANGO_SECRET_PROVEEDORES
 GRAFANA_PASS=$GRAFANA_PASS
 EOF
     chmod 600 "$SECRETS_FILE"
-    
-    # Guardar en Nomad Variables
-    log_info "Configurando secrets en Nomad..."
-    
-    nomad var put nomad/jobs/postgres \
-        postgres_password="$POSTGRES_ROOT_PASS" \
-        gdu_usuarios_password="$GDU_USUARIOS_DB_PASS" \
-        gdu_proveedores_password="$GDU_PROVEEDORES_DB_PASS"
-    
-    nomad var put nomad/jobs/gdu-usuarios \
-        db_password="$GDU_USUARIOS_DB_PASS" \
-        django_secret_key="$DJANGO_SECRET_USUARIOS"
-    
-    nomad var put nomad/jobs/gdu-portal-proveedores \
-        db_password="$GDU_PROVEEDORES_DB_PASS" \
-        django_secret_key="$DJANGO_SECRET_PROVEEDORES"
-    
-    nomad var put nomad/jobs/monitoring \
-        grafana_admin_password="$GRAFANA_PASS"
-    
-    log_info "Secrets guardados en $SECRETS_FILE y Nomad Variables"
 else
-    log_info "Secrets ya existen en $SECRETS_FILE - no se regeneran"
+    log_info "Cargando secrets existentes de $SECRETS_FILE"
     source "$SECRETS_FILE"
 fi
+
+# Siempre asegurar que las variables de Nomad existan
+log_info "Configurando secrets en Nomad Variables..."
+
+nomad var put nomad/jobs/postgres \
+    postgres_password="$POSTGRES_ROOT_PASS" \
+    gdu_usuarios_password="$GDU_USUARIOS_DB_PASS" \
+    gdu_proveedores_password="$GDU_PROVEEDORES_DB_PASS"
+
+nomad var put nomad/jobs/gdu-usuarios \
+    db_password="$GDU_USUARIOS_DB_PASS" \
+    django_secret_key="$DJANGO_SECRET_USUARIOS"
+
+nomad var put nomad/jobs/gdu-portal-proveedores \
+    db_password="$GDU_PROVEEDORES_DB_PASS" \
+    django_secret_key="$DJANGO_SECRET_PROVEEDORES"
+
+nomad var put nomad/jobs/monitoring \
+    grafana_admin_password="$GRAFANA_PASS"
+
+log_info "Secrets configurados en Nomad Variables"
 
 # Login a ghcr.io si hay token
 if [[ -n "${GHCR_TOKEN:-}" ]]; then
