@@ -163,6 +163,12 @@ job "traefik" {
         EOF
       }
 
+      volume_mount {
+        volume      = "traefik-certs"
+        destination = "/letsencrypt"
+        read_only   = false
+      }
+
       resources {
         cpu    = 200
         memory = 256
