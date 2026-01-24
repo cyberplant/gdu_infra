@@ -55,8 +55,8 @@ job "gdu-portal-proveedores" {
         DJANGO_ALLOWED_HOSTS=proveedores.gdu.uy,proveedores.portalgdu.com.uy,localhost
         DATABASE_HOST=127.0.0.1
         DATABASE_PORT=5433
-        DATABASE_NAME=gdu_proveedores
-        DATABASE_USER=gdu_proveedores
+        DATABASE_NAME=gdu_portal_proveedores
+        DATABASE_USER=gdu_portal_proveedores
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
         DATABASE_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
@@ -90,8 +90,8 @@ job "gdu-portal-proveedores" {
         DJANGO_ALLOWED_HOSTS=proveedores.gdu.uy,proveedores.portalgdu.com.uy,localhost
         DATABASE_HOST=127.0.0.1
         DATABASE_PORT=5433
-        DATABASE_NAME=gdu_proveedores
-        DATABASE_USER=gdu_proveedores
+        DATABASE_NAME=gdu_portal_proveedores
+        DATABASE_USER=gdu_portal_proveedores
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
         DATABASE_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}

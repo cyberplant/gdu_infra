@@ -26,44 +26,44 @@ create_gdu_usuarios_user:
     - name: |
         source {{ secrets_file }}
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -c "CREATE USER gdu_usuarios WITH PASSWORD '$GDU_USUARIOS_DB_PASS';" 2>/dev/null || true
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -c "CREATE USER gdu_usuarios WITH PASSWORD '$GDU_USUARIOS_DB_PASS';" 2>/dev/null || true
     - require:
       - cmd: wait_for_postgres
     - unless: |
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='gdu_usuarios'" | grep -q 1
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -tAc "SELECT 1 FROM pg_roles WHERE rolname='gdu_usuarios'" | grep -q 1
 
 create_gdu_usuarios_db:
   cmd.run:
     - name: |
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -c "CREATE DATABASE gdu_usuarios OWNER gdu_usuarios;"
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -c "CREATE DATABASE gdu_usuarios OWNER gdu_usuarios;"
     - require:
       - cmd: create_gdu_usuarios_user
     - unless: |
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='gdu_usuarios'" | grep -q 1
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -tAc "SELECT 1 FROM pg_database WHERE datname='gdu_usuarios'" | grep -q 1
 
-# Crear usuario y base de datos para gdu_proveedores
-create_gdu_proveedores_user:
+# Crear usuario y base de datos para gdu_portal_proveedores
+create_gdu_portal_proveedores_user:
   cmd.run:
     - name: |
         source {{ secrets_file }}
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -c "CREATE USER gdu_proveedores WITH PASSWORD '$GDU_PROVEEDORES_DB_PASS';" 2>/dev/null || true
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -c "CREATE USER gdu_portal_proveedores WITH PASSWORD '$GDU_PROVEEDORES_DB_PASS';" 2>/dev/null || true
     - require:
       - cmd: wait_for_postgres
     - unless: |
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='gdu_proveedores'" | grep -q 1
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -tAc "SELECT 1 FROM pg_roles WHERE rolname='gdu_portal_proveedores'" | grep -q 1
 
-create_gdu_proveedores_db:
+create_gdu_portal_proveedores_db:
   cmd.run:
     - name: |
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -c "CREATE DATABASE gdu_proveedores OWNER gdu_proveedores;"
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -c "CREATE DATABASE gdu_portal_proveedores OWNER gdu_portal_proveedores;"
     - require:
-      - cmd: create_gdu_proveedores_user
+      - cmd: create_gdu_portal_proveedores_user
     - unless: |
         PG_CONTAINER=$({{ pg_container_cmd }})
-        docker exec $PG_CONTAINER psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='gdu_proveedores'" | grep -q 1
+        docker exec $PG_CONTAINER psql -U postgres -p 5433 -tAc "SELECT 1 FROM pg_database WHERE datname='gdu_portal_proveedores'" | grep -q 1
