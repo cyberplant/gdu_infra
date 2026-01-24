@@ -110,14 +110,16 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
-            # Solo el path /o para OAuth/auth
+            # auth.portalgdu.com.uy/* -> gdu-usuarios/o/*
             gdu-auth-portal:
-              rule: "Host(`auth.portalgdu.com.uy`) && PathPrefix(`/o`)"
+              rule: "Host(`auth.portalgdu.com.uy`)"
               service: gdu-usuarios
               entryPoints:
                 - https
               tls:
                 certResolver: letsencrypt
+              middlewares:
+                - add-oauth-prefix
 
             # gdu-portal-proveedores
             gdu-proveedores-new:
@@ -147,6 +149,11 @@ job "traefik" {
             #     - https
             #   tls:
             #     certResolver: letsencrypt
+
+          middlewares:
+            add-oauth-prefix:
+              addPrefix:
+                prefix: "/o"
 
           services:
             # Nuevos servicios (Nomad)
