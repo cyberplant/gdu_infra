@@ -52,16 +52,7 @@ job "postgres" {
         memory = 512
       }
 
-      service {
-        name = "postgres"
-        port = "db"
-
-        check {
-          type     = "tcp"
-          interval = "10s"
-          timeout  = "2s"
-        }
-      }
+      # No usamos service discovery (requiere Consul)
     }
   }
 }

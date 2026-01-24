@@ -21,13 +21,8 @@ client {
     read_only = false
   }
 
-  host_volume "postgres-usuarios" {
-    path      = "/var/lib/gdu/postgres-usuarios"
-    read_only = false
-  }
-
-  host_volume "postgres-proveedores" {
-    path      = "/var/lib/gdu/postgres-proveedores"
+  host_volume "postgres-data" {
+    path      = "/var/lib/gdu/postgres-nomad"
     read_only = false
   }
 
