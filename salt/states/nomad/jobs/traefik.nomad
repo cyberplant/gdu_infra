@@ -119,9 +119,20 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
+            # auth.portalgdu.com.uy/ -> redirect a login
+            gdu-auth-root:
+              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/`)"
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+              middlewares:
+                - redirect-to-login
+              service: gdu-usuarios
+
             # auth.portalgdu.com.uy/* -> gdu-usuarios/o/*
             gdu-auth-portal:
-              rule: "Host(`auth.portalgdu.com.uy`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && !Path(`/`)"
               service: gdu-usuarios
               entryPoints:
                 - https
@@ -154,6 +165,11 @@ job "traefik" {
             add-oauth-prefix:
               addPrefix:
                 prefix: "/o"
+            redirect-to-login:
+              redirectRegex:
+                regex: "^https://auth.portalgdu.com.uy/$"
+                replacement: "https://usuarios.portalgdu.com.uy/accounts/login/"
+                permanent: false
 
           services:
             # Nuevos servicios (Nomad)
