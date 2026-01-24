@@ -51,7 +51,7 @@ job "gdu-portal-proveedores" {
         destination = "secrets/app.env"
         env         = true
         data        = <<-EOF
-        DJANGO_SETTINGS_MODULE=config.settings.production
+        DJANGO_SETTINGS_MODULE=portal_proveedores.settings
         DJANGO_ALLOWED_HOSTS=proveedores.gdu.uy,proveedores.portalgdu.com.uy,localhost
         DATABASE_HOST=127.0.0.1
         DATABASE_PORT=5433
@@ -86,7 +86,7 @@ job "gdu-portal-proveedores" {
         destination = "secrets/app.env"
         env         = true
         data        = <<-EOF
-        DJANGO_SETTINGS_MODULE=config.settings.production
+        DJANGO_SETTINGS_MODULE=portal_proveedores.settings
         DJANGO_ALLOWED_HOSTS=proveedores.gdu.uy,proveedores.portalgdu.com.uy,localhost
         DATABASE_HOST=127.0.0.1
         DATABASE_PORT=5433
