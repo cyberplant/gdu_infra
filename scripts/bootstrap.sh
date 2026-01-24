@@ -208,7 +208,45 @@ if [[ -n "${GHCR_TOKEN:-}" ]]; then
 fi
 
 # ============================================
-# 7. Desplegar jobs de Nomad
+# 7. Desplegar PostgreSQL y crear bases de datos
+# ============================================
+log_info "Desplegando PostgreSQL..."
+nomad job run /srv/gdu_infra/nomad/postgres.nomad
+
+# Esperar a que PostgreSQL esté listo
+log_info "Esperando a que PostgreSQL esté listo..."
+for i in {1..30}; do
+    if nc -z 127.0.0.1 5433 2>/dev/null; then
+        break
+    fi
+    sleep 2
+done
+
+# Crear bases de datos y usuarios
+log_info "Creando bases de datos y usuarios..."
+sleep 5  # Dar tiempo extra a PostgreSQL para inicializar
+
+# Obtener el container ID de PostgreSQL
+PG_CONTAINER=$(docker ps -q --filter ancestor=postgres:15-alpine)
+
+if [[ -n "$PG_CONTAINER" ]]; then
+    # Crear usuario y base de datos para gdu_usuarios
+    docker exec "$PG_CONTAINER" psql -U postgres -c "CREATE USER gdu_usuarios WITH PASSWORD '$GDU_USUARIOS_DB_PASS';" 2>/dev/null || true
+    docker exec "$PG_CONTAINER" psql -U postgres -c "CREATE DATABASE gdu_usuarios OWNER gdu_usuarios;" 2>/dev/null || true
+    docker exec "$PG_CONTAINER" psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE gdu_usuarios TO gdu_usuarios;" 2>/dev/null || true
+    
+    # Crear usuario y base de datos para gdu_proveedores
+    docker exec "$PG_CONTAINER" psql -U postgres -c "CREATE USER gdu_proveedores WITH PASSWORD '$GDU_PROVEEDORES_DB_PASS';" 2>/dev/null || true
+    docker exec "$PG_CONTAINER" psql -U postgres -c "CREATE DATABASE gdu_proveedores OWNER gdu_proveedores;" 2>/dev/null || true
+    docker exec "$PG_CONTAINER" psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE gdu_proveedores TO gdu_proveedores;" 2>/dev/null || true
+    
+    log_info "Bases de datos creadas"
+else
+    log_warn "No se encontró container de PostgreSQL - las bases de datos se crearán manualmente"
+fi
+
+# ============================================
+# 8. Desplegar resto de jobs de Nomad
 # ============================================
 log_info "Desplegando jobs de Nomad..."
 salt-call --local state.apply nomad.jobs

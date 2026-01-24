@@ -53,16 +53,17 @@ job "gdu-usuarios" {
         env         = true
         data        = <<-EOF
         DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
-        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,localhost
-        DATABASE_HOST=127.0.0.1
-        DATABASE_PORT=5433
-        DATABASE_NAME=gdu_usuarios
-        DATABASE_USER=gdu_usuarios
+        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,auth.proveedores.gdu.uy,localhost
+        DB_ENGINE=django.db.backends.postgresql
+        DB_HOST=127.0.0.1
+        DB_PORT=5433
+        DB_NAME=gdu_usuarios
+        DB_USER=gdu_usuarios
         {{ with nomadVar "nomad/jobs/gdu-usuarios" }}
-        DATABASE_PASSWORD={{ .db_password }}
+        DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
         {{ else }}
-        DATABASE_PASSWORD=CAMBIAR_PASSWORD
+        DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
@@ -93,16 +94,17 @@ job "gdu-usuarios" {
         env         = true
         data        = <<-EOF
         DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
-        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,localhost
-        DATABASE_HOST=127.0.0.1
-        DATABASE_PORT=5433
-        DATABASE_NAME=gdu_usuarios
-        DATABASE_USER=gdu_usuarios
+        DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,auth.proveedores.gdu.uy,localhost
+        DB_ENGINE=django.db.backends.postgresql
+        DB_HOST=127.0.0.1
+        DB_PORT=5433
+        DB_NAME=gdu_usuarios
+        DB_USER=gdu_usuarios
         {{ with nomadVar "nomad/jobs/gdu-usuarios" }}
-        DATABASE_PASSWORD={{ .db_password }}
+        DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
         {{ else }}
-        DATABASE_PASSWORD=CAMBIAR_PASSWORD
+        DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
         DEBUG=False
