@@ -41,6 +41,15 @@ job "traefik" {
           dashboard: true
           insecure: true
 
+        accessLog:
+          format: common
+          filters:
+            statusCodes:
+              - "400-599"
+
+        log:
+          level: DEBUG
+
         ping:
           entryPoint: http
 
@@ -125,15 +134,6 @@ job "traefik" {
             gdu-proveedores-new:
               rule: "Host(`proveedores.portalgdu.com.uy`)"
               service: gdu-portal-proveedores
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
-
-            # OAuth en dominio legacy
-            gdu-auth-legacy:
-              rule: "Host(`auth.proveedores.gdu.uy`)"
-              service: gdu-usuarios
               entryPoints:
                 - https
               tls:
