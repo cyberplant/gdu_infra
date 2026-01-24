@@ -186,7 +186,7 @@ log_info "Configurando secrets en Nomad Variables..."
 nomad var put nomad/jobs/postgres \
     postgres_password="$POSTGRES_ROOT_PASS" \
     gdu_usuarios_password="$GDU_USUARIOS_DB_PASS" \
-    gdu_proveedores_password="$GDU_PORTAL_PROVEEDORES_DB_PASS"
+    gdu_portal_proveedores_password="$GDU_PORTAL_PROVEEDORES_DB_PASS"
 
 nomad var put nomad/jobs/gdu-usuarios \
     db_password="$GDU_USUARIOS_DB_PASS" \

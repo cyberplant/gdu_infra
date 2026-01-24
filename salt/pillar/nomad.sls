@@ -8,7 +8,7 @@ domains:
   gdu_usuarios:
     - usuarios.portalgdu.com.uy
     - auth.portalgdu.com.uy
-  gdu_proveedores:
+  gdu_portal_proveedores:
     - proveedores.gdu.uy
     - proveedores.portalgdu.com.uy
   grafana:

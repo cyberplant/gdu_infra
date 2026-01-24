@@ -71,7 +71,7 @@ deploy_gdu_usuarios:
       - cmd: deploy_postgres_init
       - file: nomad_job_gdu-usuarios
 
-deploy_gdu_proveedores:
+deploy_gdu_portal_proveedores:
   cmd.run:
     - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/gdu-portal-proveedores.nomad
     - unless: /usr/local/bin/nomad job status gdu-portal-proveedores 2>/dev/null | grep -q "Status.*running"
