@@ -2,6 +2,7 @@
 # Uso: salt-call --local state.apply nomad.deploy pillar='{"app": "gdu-usuarios"}'
 # O para todas: salt-call --local state.apply nomad.deploy pillar='{"app": "all"}'
 
+{% set nomad_jobs_path = "/srv/gdu_infra/salt/states/nomad/jobs" %}
 {% set app = salt['pillar.get']('app', 'all') %}
 {% set apps = ['gdu-usuarios', 'gdu-portal-proveedores'] %}
 
@@ -41,7 +42,7 @@ wait_stop_{{ app_name }}:
 # Iniciar el job con la nueva imagen
 start_{{ app_name }}:
   cmd.run:
-    - name: /usr/local/bin/nomad job run /srv/gdu_infra/nomad/{{ app_name }}.nomad
+    - name: /usr/local/bin/nomad job run {{ nomad_jobs_path }}/{{ app_name }}.nomad
     - require:
       - cmd: wait_stop_{{ app_name }}
 
