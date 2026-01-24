@@ -79,45 +79,10 @@ job "traefik" {
         http:
           routers:
             # ============================================
-            # SISTEMAS NUEVOS (Nomad)
-            # ============================================
-            gdu-usuarios:
-              rule: "Host(`usuarios.portalgdu.com.uy`)"
-              service: gdu-usuarios
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
-
-            gdu-auth:
-              rule: "Host(`auth.portalgdu.com.uy`)"
-              service: gdu-usuarios
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
-
-            gdu-proveedores-new:
-              rule: "Host(`proveedores.portalgdu.com.uy`)"
-              service: gdu-portal-proveedores
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
-
-            grafana:
-              rule: "Host(`grafana.portalgdu.com.uy`)"
-              service: grafana
-              entryPoints:
-                - https
-              tls:
-                certResolver: letsencrypt
-
-            # ============================================
-            # SISTEMAS LEGACY (Docker existente)
+            # SISTEMAS LEGACY (Docker existente) - ACTIVOS
             # ============================================
             legacy-proveedores:
-              rule: "Host(`proveedores.gdu.uy`) || Host(`www.proveedores.gdu.uy`)"
+              rule: "Host(`proveedores.gdu.uy`)"
               service: legacy-portal-gdu
               entryPoints:
                 - https
@@ -125,12 +90,48 @@ job "traefik" {
                 certResolver: letsencrypt
 
             legacy-gestiones:
-              rule: "Host(`gestiones.portalgdu.com.uy`) || Host(`gduprod.roar.uy`)"
+              rule: "Host(`gestiones.portalgdu.com.uy`)"
               service: legacy-meeting-room
               entryPoints:
                 - https
               tls:
                 certResolver: letsencrypt
+
+            # ============================================
+            # SISTEMAS NUEVOS (Nomad) - PENDIENTES
+            # Descomentar cuando los dominios estén configurados
+            # ============================================
+            # gdu-usuarios:
+            #   rule: "Host(`usuarios.portalgdu.com.uy`)"
+            #   service: gdu-usuarios
+            #   entryPoints:
+            #     - https
+            #   tls:
+            #     certResolver: letsencrypt
+            #
+            # gdu-auth:
+            #   rule: "Host(`auth.portalgdu.com.uy`)"
+            #   service: gdu-usuarios
+            #   entryPoints:
+            #     - https
+            #   tls:
+            #     certResolver: letsencrypt
+            #
+            # gdu-proveedores-new:
+            #   rule: "Host(`proveedores.portalgdu.com.uy`)"
+            #   service: gdu-portal-proveedores
+            #   entryPoints:
+            #     - https
+            #   tls:
+            #     certResolver: letsencrypt
+            #
+            # grafana:
+            #   rule: "Host(`grafana.portalgdu.com.uy`)"
+            #   service: grafana
+            #   entryPoints:
+            #     - https
+            #   tls:
+            #     certResolver: letsencrypt
 
           services:
             # Nuevos servicios (Nomad)
