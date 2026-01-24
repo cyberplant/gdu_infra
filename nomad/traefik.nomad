@@ -108,6 +108,14 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
+            gdu-auth-portal:
+              rule: "Host(`auth.portalgdu.com.uy`)"
+              service: gdu-usuarios
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
             # ============================================
             # SISTEMAS NUEVOS (Nomad) - PENDIENTES
             # Descomentar cuando los dominios estén configurados
