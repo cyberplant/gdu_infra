@@ -66,7 +66,7 @@ job "gdu-usuarios" {
         DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
-        DEBUG=False
+        DJANGO_DEBUG=False
         EOF
       }
 
@@ -107,7 +107,7 @@ job "gdu-usuarios" {
         DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
-        DEBUG=False
+        DJANGO_DEBUG=False
         PORT=8010
         EOF
       }

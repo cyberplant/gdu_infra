@@ -69,7 +69,7 @@ job "gdu-portal-proveedores" {
         OAUTH2_CLIENT_ID=CAMBIAR_CLIENT_ID
         OAUTH2_CLIENT_SECRET=CAMBIAR_CLIENT_SECRET
         {{ end }}
-        DEBUG=False
+        DJANGO_DEBUG=False
         OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
         OAUTH2_PROFILE_URL=https://usuarios.portalgdu.com.uy/usuarios/perfil
         IDP_PASSWORD_CHANGE_URL=https://usuarios.portalgdu.com.uy/password_change/
@@ -114,7 +114,7 @@ job "gdu-portal-proveedores" {
         OAUTH2_CLIENT_ID=CAMBIAR_CLIENT_ID
         OAUTH2_CLIENT_SECRET=CAMBIAR_CLIENT_SECRET
         {{ end }}
-        DEBUG=False
+        DJANGO_DEBUG=False
         PORT=8011
         OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
         OAUTH2_PROFILE_URL=https://usuarios.portalgdu.com.uy/usuarios/perfil
