@@ -71,6 +71,8 @@ job "gdu-portal-proveedores" {
         {{ end }}
         DEBUG=False
         OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
+        OAUTH2_PROFILE_URL=https://usuarios.portalgdu.com.uy/usuarios/perfil
+        IDP_PASSWORD_CHANGE_URL=https://usuarios.portalgdu.com.uy/password_change/
         SOCIAL_AUTH_GDU_USUARIOS_REDIRECT_URI=https://proveedores.portalgdu.com.uy/oauth/complete/gdu-usuarios/
         EOF
       }
@@ -115,6 +117,8 @@ job "gdu-portal-proveedores" {
         DEBUG=False
         PORT=8011
         OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
+        OAUTH2_PROFILE_URL=https://usuarios.portalgdu.com.uy/usuarios/perfil
+        IDP_PASSWORD_CHANGE_URL=https://usuarios.portalgdu.com.uy/password_change/
         SOCIAL_AUTH_GDU_USUARIOS_REDIRECT_URI=https://proveedores.portalgdu.com.uy/oauth/complete/gdu-usuarios/
         EOF
       }
