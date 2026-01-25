@@ -139,9 +139,18 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
+            # auth.portalgdu.com.uy/api/* -> gdu-usuarios/api/* (sin modificar)
+            gdu-auth-api:
+              rule: "Host(`auth.portalgdu.com.uy`) && PathPrefix(`/api`)"
+              service: gdu-usuarios
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
             # auth.portalgdu.com.uy/* -> gdu-usuarios/o/* (agrega prefijo)
             gdu-auth-portal:
-              rule: "Host(`auth.portalgdu.com.uy`) && !Path(`/`) && !PathPrefix(`/o`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && !Path(`/`) && !PathPrefix(`/o`) && !PathPrefix(`/api`)"
               service: gdu-usuarios
               entryPoints:
                 - https
