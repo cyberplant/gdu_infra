@@ -61,9 +61,13 @@ job "gdu-portal-proveedores" {
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
         DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
+        OAUTH2_CLIENT_ID={{ .oauth_client_id }}
+        OAUTH2_CLIENT_SECRET={{ .oauth_client_secret }}
         {{ else }}
         DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
+        OAUTH2_CLIENT_ID=CAMBIAR_CLIENT_ID
+        OAUTH2_CLIENT_SECRET=CAMBIAR_CLIENT_SECRET
         {{ end }}
         DEBUG=False
         OAUTH2_IDP_URL=https://auth.portalgdu.com.uy
@@ -100,9 +104,13 @@ job "gdu-portal-proveedores" {
         {{ with nomadVar "nomad/jobs/gdu-portal-proveedores" }}
         DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
+        OAUTH2_CLIENT_ID={{ .oauth_client_id }}
+        OAUTH2_CLIENT_SECRET={{ .oauth_client_secret }}
         {{ else }}
         DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
+        OAUTH2_CLIENT_ID=CAMBIAR_CLIENT_ID
+        OAUTH2_CLIENT_SECRET=CAMBIAR_CLIENT_SECRET
         {{ end }}
         DEBUG=False
         PORT=8011
