@@ -5,6 +5,12 @@ job "legacy-proveedores-static" {
   group "static" {
     count = 1
 
+    volume "legacy-proveedores-static" {
+      type      = "host"
+      source    = "legacy-proveedores-static"
+      read_only = true
+    }
+
     network {
       port "http" {
         static = 8085
