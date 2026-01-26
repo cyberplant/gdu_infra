@@ -90,8 +90,16 @@ job "traefik" {
             # ============================================
             # SISTEMAS LEGACY (Docker existente) - ACTIVOS
             # ============================================
+            legacy-proveedores-static:
+              rule: "Host(`proveedores.gdu.uy`) && PathPrefix(`/static/`)"
+              service: legacy-proveedores-static
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
             legacy-proveedores:
-              rule: "Host(`proveedores.gdu.uy`)"
+              rule: "Host(`proveedores.gdu.uy`) && !PathPrefix(`/static/`)"
               service: legacy-portal-gdu
               entryPoints:
                 - https
@@ -211,6 +219,11 @@ job "traefik" {
               loadBalancer:
                 servers:
                   - url: "http://127.0.0.1:8000"
+
+            legacy-proveedores-static:
+              loadBalancer:
+                servers:
+                  - url: "http://127.0.0.1:8085"
 
             legacy-meeting-room:
               loadBalancer:

@@ -18,6 +18,14 @@ deploy_traefik:
     - require:
       - cmd: check_nomad_running
 
+# Servir /static/ del legacy proveedores (replica nginx alias /var/www/static)
+deploy_legacy_proveedores_static:
+  cmd.run:
+    - name: /usr/local/bin/nomad job run {{ nomad_jobs_path }}/legacy-proveedores-static.nomad
+    - unless: /usr/local/bin/nomad job status legacy-proveedores-static 2>/dev/null | grep -q "Status.*running"
+    - require:
+      - cmd: deploy_traefik
+
 # Desplegar PostgreSQL
 deploy_postgres:
   cmd.run:

@@ -36,6 +36,11 @@ client {
     read_only = false
   }
 
+  host_volume "legacy-proveedores-static" {
+    path      = "/var/www/static"
+    read_only = true
+  }
+
   host_volume "prometheus-data" {
     path      = "/var/lib/gdu/prometheus"
     read_only = false
