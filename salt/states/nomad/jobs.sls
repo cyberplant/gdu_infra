@@ -72,9 +72,4 @@ deploy_gdu_portal_proveedores:
       - cmd: deploy_postgres_init
 
 # Desplegar monitoreo
-deploy_monitoring:
-  cmd.run:
-    - name: /usr/local/bin/nomad job run {{ nomad_jobs_path }}/monitoring.nomad
-    - unless: /usr/local/bin/nomad job status monitoring 2>/dev/null | grep -q "Status.*running"
-    - require:
-      - cmd: deploy_traefik
+

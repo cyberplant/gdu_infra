@@ -91,7 +91,7 @@ job "traefik" {
             # SISTEMAS LEGACY (Docker existente) - ACTIVOS
             # ============================================
             legacy-proveedores-static:
-              rule: "Host(`proveedores.gdu.uy`) && PathPrefix(`/static/`)"
+              rule: "Host(`proveedores.gdu.uy`) && PathPrefix(`/static`)"
               service: legacy-proveedores-static
               entryPoints:
                 - https
@@ -99,7 +99,7 @@ job "traefik" {
                 certResolver: letsencrypt
 
             legacy-proveedores:
-              rule: "Host(`proveedores.gdu.uy`) && !PathPrefix(`/static/`)"
+              rule: "Host(`proveedores.gdu.uy`) && !PathPrefix(`/static`)"
               service: legacy-portal-gdu
               entryPoints:
                 - https
