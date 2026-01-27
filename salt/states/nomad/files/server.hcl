@@ -41,6 +41,16 @@ client {
     read_only = true
   }
 
+  host_volume "legacy-mrm-static" {
+    path      = "/var/www/static/mrm"
+    read_only = true
+  }
+
+  host_volume "legacy-mrm-media" {
+    path      = "/var/www/static/mrm-media"
+    read_only = true
+  }
+
   host_volume "prometheus-data" {
     path      = "/var/lib/gdu/prometheus"
     read_only = false

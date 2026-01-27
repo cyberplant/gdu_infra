@@ -26,6 +26,14 @@ deploy_legacy_proveedores_static:
     - require:
       - cmd: deploy_traefik
 
+# Servir /static/ y /media/ del legacy gestiones (meeting room manager)
+deploy_legacy_gestiones_static:
+  cmd.run:
+    - name: /usr/local/bin/nomad job run {{ nomad_jobs_path }}/legacy-gestiones-static.nomad
+    - unless: /usr/local/bin/nomad job status legacy-gestiones-static 2>/dev/null | grep -q "Status.*running"
+    - require:
+      - cmd: deploy_traefik
+
 # Desplegar PostgreSQL
 deploy_postgres:
   cmd.run:

@@ -106,8 +106,16 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
+            legacy-gestiones-static:
+              rule: "Host(`gestiones.portalgdu.com.uy`) && (PathPrefix(`/static`) || PathPrefix(`/media`))"
+              service: legacy-gestiones-static
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
             legacy-gestiones:
-              rule: "Host(`gestiones.portalgdu.com.uy`)"
+              rule: "Host(`gestiones.portalgdu.com.uy`) && !PathPrefix(`/static`) && !PathPrefix(`/media`)"
               service: legacy-meeting-room
               entryPoints:
                 - https
@@ -229,6 +237,11 @@ job "traefik" {
               loadBalancer:
                 servers:
                   - url: "http://127.0.0.1:8001"
+
+            legacy-gestiones-static:
+              loadBalancer:
+                servers:
+                  - url: "http://127.0.0.1:8086"
         EOF
       }
 
