@@ -148,7 +148,7 @@ job "traefik" {
 
             # auth.portalgdu.com.uy/login -> gdu-usuarios/login
             gdu-auth-login:
-              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/login`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && (Path(`/login`) || Path(`/login/`))"
               service: gdu-usuarios
               priority: 100
               entryPoints:
@@ -158,7 +158,7 @@ job "traefik" {
 
             # auth.portalgdu.com.uy/logout -> gdu-usuarios/logout
             gdu-auth-logout:
-              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/logout`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && (Path(`/logout`) || Path(`/logout/`))"
               service: gdu-usuarios
               priority: 100
               entryPoints:
