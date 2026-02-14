@@ -54,6 +54,7 @@ job "gdu-usuarios" {
         data        = <<-EOF
         DJANGO_SETTINGS_MODULE=gdu_usuarios.settings
         DJANGO_ALLOWED_HOSTS=usuarios.portalgdu.com.uy,auth.portalgdu.com.uy,auth.proveedores.gdu.uy,localhost
+	COOKIE_DOMAIN=.portalgdu.com.uy
         DB_ENGINE=django.db.backends.postgresql
         DB_HOST=127.0.0.1
         DB_PORT=5433
