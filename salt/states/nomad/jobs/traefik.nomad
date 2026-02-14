@@ -146,6 +146,24 @@ job "traefik" {
                 - redirect-to-login
               service: gdu-usuarios
 
+            # auth.portalgdu.com.uy/login -> gdu-usuarios/login
+            gdu-auth-login:
+              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/login`)"
+              service: gdu-usuarios
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            # auth.portalgdu.com.uy/logout -> gdu-usuarios/logout
+            gdu-auth-logout:
+              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/logout`)"
+              service: gdu-usuarios
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
             # auth.portalgdu.com.uy/o/* -> gdu-usuarios/o/* (sin modificar)
             gdu-auth-oauth:
               rule: "Host(`auth.portalgdu.com.uy`) && PathPrefix(`/o`)"
@@ -166,7 +184,7 @@ job "traefik" {
 
             # auth.portalgdu.com.uy/* -> gdu-usuarios/o/* (agrega prefijo)
             gdu-auth-portal:
-              rule: "Host(`auth.portalgdu.com.uy`) && !Path(`/`) && !PathPrefix(`/o`) && !PathPrefix(`/api`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && !Path(`/`) && !Path(`/login`) && !Path(`/logout`) && !PathPrefix(`/o`) && !PathPrefix(`/api`)"
               service: gdu-usuarios
               entryPoints:
                 - https
@@ -202,7 +220,7 @@ job "traefik" {
             redirect-to-login:
               redirectRegex:
                 regex: "^https://auth.portalgdu.com.uy/$"
-                replacement: "https://usuarios.portalgdu.com.uy/accounts/login/"
+                replacement: "https://auth.portalgdu.com.uy/login"
                 permanent: false
 
           services:
