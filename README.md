@@ -28,16 +28,16 @@ gdu_infra/
 │   ├── pillar/           # Variables y configuración
 │   ├── states/
 │   │   ├── base/         # usuarios, SSH, firewall
-│   │   └── nomad/        # Instalación Nomad
+│   │   └── nomad/        # Jobs y configuración Nomad
+│   │       ├── jobs/     # Definiciones de jobs (.nomad)
+│   │       ├── install.sls
+│   │       ├── jobs.sls
+│   │       └── deploy.sls
 │   └── minion.conf       # Config para masterless
-├── nomad/
-│   ├── server.hcl        # Configuración servidor Nomad
-│   ├── traefik.nomad     # Reverse proxy + SSL
-│   ├── gdu-usuarios.nomad
-│   ├── gdu-portal-proveedores.nomad
-│   └── monitoring.nomad  # Prometheus + Grafana
 ├── scripts/
-│   └── bootstrap.sh      # Script inicial para el servidor
+│   ├── bootstrap.sh      # Bootstrap inicial del servidor
+│   ├── deploy.sh         # Deploy de aplicaciones
+│   └── configure-secrets.sh
 └── README.md
 ```
 
@@ -72,21 +72,88 @@ git clone git@github.com:cyberplant/gdu_infra.git /srv/gdu_infra
 sudo salt-call --local state.apply
 
 # Aplicar estado específico
-sudo salt-call --local state.apply k3s
+sudo salt-call --local state.apply nomad.jobs
 ```
 
-### Comandos K3s útiles
+### Deploy de aplicaciones
 
 ```bash
-# Ver estado del cluster
-sudo k3s kubectl get nodes
-sudo k3s kubectl get pods -A
+# Deploy de una aplicación específica
+sudo /srv/gdu_infra/scripts/deploy.sh gdu-usuarios
+sudo /srv/gdu_infra/scripts/deploy.sh gdu-portal-proveedores
 
-# Aplicar manifiestos
-sudo k3s kubectl apply -f /srv/gdu_infra/k8s/gdu-usuarios/
+# Deploy de todas las aplicaciones
+sudo /srv/gdu_infra/scripts/deploy.sh all
+```
 
-# Ver logs de un pod
-sudo k3s kubectl logs -f deployment/gdu-usuarios -n gdu
+### Actualizar a una nueva versión
+
+Las imágenes se publican automáticamente en GitHub Container Registry cuando se hace push a `main`. Para deployar la última versión:
+
+```bash
+# 1. Forzar pull de la imagen más reciente y restart del job
+nomad job restart gdu-usuarios
+
+# O hacer un redeploy completo
+nomad job run /srv/gdu_infra/salt/states/nomad/jobs/gdu-usuarios.nomad
+```
+
+### Usar un branch específico del IdP (gdu_usuarios)
+
+Si necesitas probar una versión del IdP desde un branch distinto a `main`:
+
+1. **Verificar que la imagen del branch existe en ghcr.io**
+   
+   El CI genera imágenes con el nombre del branch como tag:
+   ```
+   ghcr.io/cyberplant/gdu_usuarios:nombre-del-branch
+   ```
+
+2. **Modificar temporalmente el job de Nomad**
+   ```bash
+   # Editar el archivo del job
+   vim /srv/gdu_infra/salt/states/nomad/jobs/gdu-usuarios.nomad
+   
+   # Cambiar la línea de imagen de:
+   #   image = "ghcr.io/cyberplant/gdu_usuarios:latest"
+   # A:
+   #   image = "ghcr.io/cyberplant/gdu_usuarios:mi-branch"
+   ```
+
+3. **Aplicar el cambio**
+   ```bash
+   nomad job run /srv/gdu_infra/salt/states/nomad/jobs/gdu-usuarios.nomad
+   ```
+
+4. **Para volver a main**, revertir el cambio y re-deployar:
+   ```bash
+   cd /srv/gdu_infra && git checkout salt/states/nomad/jobs/gdu-usuarios.nomad
+   nomad job run /srv/gdu_infra/salt/states/nomad/jobs/gdu-usuarios.nomad
+   ```
+
+### Comandos Nomad útiles
+
+```bash
+# Ver todos los jobs
+nomad job status
+
+# Ver estado de un job específico
+nomad job status gdu-usuarios
+
+# Ver allocations de un job
+nomad job allocs gdu-usuarios
+
+# Ver logs de una allocation
+nomad alloc logs -f <ALLOC_ID>
+
+# Reiniciar un job (pull nueva imagen si existe)
+nomad job restart gdu-usuarios
+
+# Detener un job
+nomad job stop gdu-usuarios
+
+# Ver logs en tiempo real del último allocation
+nomad alloc logs -f $(nomad job allocs -json gdu-usuarios | jq -r '.[0].ID')
 ```
 
 ## Monitoreo
