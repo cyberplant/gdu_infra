@@ -150,6 +150,7 @@ job "traefik" {
             gdu-auth-login:
               rule: "Host(`auth.portalgdu.com.uy`) && Path(`/login`)"
               service: gdu-usuarios
+              priority: 100
               entryPoints:
                 - https
               tls:
@@ -159,6 +160,7 @@ job "traefik" {
             gdu-auth-logout:
               rule: "Host(`auth.portalgdu.com.uy`) && Path(`/logout`)"
               service: gdu-usuarios
+              priority: 100
               entryPoints:
                 - https
               tls:
@@ -184,8 +186,9 @@ job "traefik" {
 
             # auth.portalgdu.com.uy/* -> gdu-usuarios/o/* (agrega prefijo)
             gdu-auth-portal:
-              rule: "Host(`auth.portalgdu.com.uy`) && !Path(`/`) && !Path(`/login`) && !Path(`/logout`) && !PathPrefix(`/o`) && !PathPrefix(`/api`)"
+              rule: "Host(`auth.portalgdu.com.uy`)"
               service: gdu-usuarios
+              priority: 1
               entryPoints:
                 - https
               tls:
