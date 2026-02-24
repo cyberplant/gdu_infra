@@ -34,7 +34,7 @@ job "gdu-usuarios" {
       config {
         image   = "alpine:3.19"
         command = "sh"
-        args    = ["-c", "if [ ! -f /oidc/oidc_rsa_key.pem ]; then apk add --no-cache openssl && openssl genrsa -out /oidc/oidc_rsa_key.pem 2048 && chmod 600 /oidc/oidc_rsa_key.pem && echo 'Clave RSA OIDC generada'; else echo 'Clave RSA OIDC ya existe'; fi"]
+        args    = ["-c", "if [ ! -f /oidc/oidc_rsa_key.pem ]; then apk add --no-cache openssl && openssl genrsa -out /oidc/oidc_rsa_key.pem 2048 && chmod 644 /oidc/oidc_rsa_key.pem && echo 'Clave RSA OIDC generada'; else echo 'Clave RSA OIDC ya existe'; fi"]
       }
 
       resources {
