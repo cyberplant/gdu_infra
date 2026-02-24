@@ -5,9 +5,41 @@ job "gdu-usuarios" {
   group "app" {
     count = 1
 
+    volume "oidc-keys" {
+      type      = "host"
+      source    = "gdu-usuarios-oidc"
+      read_only = false
+    }
+
     network {
       port "http" {
         static = 8010
+      }
+    }
+
+    task "generate-oidc-key" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      volume_mount {
+        volume      = "oidc-keys"
+        destination = "/oidc"
+        read_only   = false
+      }
+
+      config {
+        image   = "alpine:3.19"
+        command = "sh"
+        args    = ["-c", "if [ ! -f /oidc/oidc_rsa_key.pem ]; then apk add --no-cache openssl && openssl genrsa -out /oidc/oidc_rsa_key.pem 2048 && chmod 600 /oidc/oidc_rsa_key.pem && echo 'Clave RSA OIDC generada'; else echo 'Clave RSA OIDC ya existe'; fi"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 64
       }
     }
 
@@ -63,12 +95,19 @@ job "gdu-usuarios" {
         {{ with nomadVar "nomad/jobs/gdu-usuarios" }}
         DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
-        {{ else }}
+{{ else }}
         DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
+        OIDC_RSA_KEY_PATH=/oidc/oidc_rsa_key.pem
         DJANGO_DEBUG=False
         EOF
+      }
+
+      volume_mount {
+        volume      = "oidc-keys"
+        destination = "/oidc"
+        read_only   = true
       }
 
       resources {
@@ -104,13 +143,20 @@ job "gdu-usuarios" {
         {{ with nomadVar "nomad/jobs/gdu-usuarios" }}
         DB_PASSWORD={{ .db_password }}
         DJANGO_SECRET_KEY={{ .django_secret_key }}
-        {{ else }}
+{{ else }}
         DB_PASSWORD=CAMBIAR_PASSWORD
         DJANGO_SECRET_KEY=CAMBIAR_SECRET_KEY
         {{ end }}
+        OIDC_RSA_KEY_PATH=/oidc/oidc_rsa_key.pem
         DJANGO_DEBUG=False
         PORT=8010
         EOF
+      }
+
+      volume_mount {
+        volume      = "oidc-keys"
+        destination = "/oidc"
+        read_only   = true
       }
 
       resources {

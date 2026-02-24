@@ -39,7 +39,7 @@ nomad_data_dir:
     - mode: 755
 
 # Directorios para volúmenes
-{% for dir in ['traefik-certs', 'postgres-usuarios', 'postgres-proveedores', 'usuarios-media', 'proveedores-media', 'prometheus', 'grafana'] %}
+{% for dir in ['traefik-certs', 'postgres-usuarios', 'postgres-proveedores', 'usuarios-media', 'proveedores-media', 'prometheus', 'grafana', 'usuarios-oidc'] %}
 gdu_volume_{{ dir }}:
   file.directory:
     - name: /var/lib/gdu/{{ dir }}

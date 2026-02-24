@@ -60,6 +60,11 @@ client {
     path      = "/var/lib/gdu/grafana"
     read_only = false
   }
+
+  host_volume "gdu-usuarios-oidc" {
+    path      = "/var/lib/gdu/usuarios-oidc"
+    read_only = false
+  }
 }
 
 plugin "docker" {
