@@ -156,7 +156,7 @@ job "traefik" {
               tls:
                 certResolver: letsencrypt
 
-            # auth.portalgdu.com.uy/logout -> gdu-usuarios/logout
+            # auth.portalgdu.com.uy/logout -> gdu-usuarios/o/logout
             gdu-auth-logout:
               rule: "Host(`auth.portalgdu.com.uy`) && (Path(`/logout`) || Path(`/logout/`))"
               service: gdu-usuarios
@@ -165,6 +165,8 @@ job "traefik" {
                 - https
               tls:
                 certResolver: letsencrypt
+              middlewares:
+                - rewrite-logout
 
             # auth.portalgdu.com.uy/o/* -> gdu-usuarios/o/* (sin modificar)
             gdu-auth-oauth:
@@ -220,6 +222,9 @@ job "traefik" {
             add-oauth-prefix:
               addPrefix:
                 prefix: "/o"
+            rewrite-logout:
+              replacePath:
+                path: "/o/logout"
             redirect-to-login:
               redirectRegex:
                 regex: "^https://auth.portalgdu.com.uy/$"
