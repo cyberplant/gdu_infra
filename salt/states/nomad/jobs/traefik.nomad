@@ -208,6 +208,17 @@ job "traefik" {
                 certResolver: letsencrypt
 
             # ============================================
+            # KEYCLOAK TEST
+            # ============================================
+            keycloak-test:
+              rule: "Host(`keycloak.roar.uy`)"
+              service: keycloak-test
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+
+            # ============================================
             # SISTEMAS NUEVOS (Nomad) - PENDIENTES
             # ============================================
             # grafana:
@@ -242,6 +253,11 @@ job "traefik" {
               loadBalancer:
                 servers:
                   - url: "http://127.0.0.1:8011"
+
+            keycloak-test:
+              loadBalancer:
+                servers:
+                  - url: "http://127.0.0.1:8180"
 
             grafana:
               loadBalancer:
