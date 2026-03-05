@@ -62,7 +62,7 @@ job "keycloak-test" {
         # Database config (usa el mismo Postgres que gdu-usuarios)
         KC_DB              = "postgres"
         KC_DB_URL          = "jdbc:postgresql://127.0.0.1:5433/keycloak"
-        KC_DB_USERNAME     = "gdu_app"
+        KC_DB_USERNAME     = "postgres"
         KC_DB_PASSWORD     = "${POSTGRES_PASSWORD}"
         
         # Proxy settings para Traefik
@@ -76,7 +76,7 @@ job "keycloak-test" {
 
       volume_mount {
         volume      = "keycloak-data"
-        destination = "/opt/keycloak/data"
+        destination = "/var/lib/gdu/keycloak"
         read_only   = false
       }
 

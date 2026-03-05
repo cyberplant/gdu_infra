@@ -65,6 +65,11 @@ client {
     path      = "/var/lib/gdu/usuarios-oidc"
     read_only = false
   }
+
+  host_volume "keycloak-data" {
+    path      = "/var/lib/gdu/keycloak"
+    read_only = false
+  }
 }
 
 plugin "docker" {
