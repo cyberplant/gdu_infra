@@ -212,7 +212,7 @@ job "traefik" {
             # Ver instrucciones de remoción en mock-userinfo.nomad
             # ============================================
             mock-userinfo:
-              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/o/userinfo`)"
+              rule: "Host(`auth.portalgdu.com.uy`) && (Path(`/o/userinfo`) || Path(`/o/userinfo/`))"
               service: mock-userinfo
               priority: 200
               entryPoints:

@@ -71,6 +71,10 @@ job "mock-userinfo" {
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
+                print(f">>> {self.command} {self.path}", flush=True)
+                for key, value in self.headers.items():
+                    print(f"    {key}: {value}", flush=True)
+                print("", flush=True)
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 self.send_header('Content-Length', str(len(USERINFO_JSON)))
@@ -78,7 +82,7 @@ job "mock-userinfo" {
                 self.wfile.write(USERINFO_JSON)
 
             def log_message(self, format, *args):
-                pass  # suprimir logs del servidor
+                pass  # logs manejados en do_GET
 
         HTTPServer(('127.0.0.1', 19999), Handler).serve_forever()
         EOF
