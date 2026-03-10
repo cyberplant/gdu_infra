@@ -208,6 +208,22 @@ job "traefik" {
                 certResolver: letsencrypt
 
             # ============================================
+            # TEMPORAL mock-userinfo - REMOVER CUANDO NO SE NECESITE
+            # Ver instrucciones de remoción en mock-userinfo.nomad
+            # ============================================
+            mock-userinfo:
+              rule: "Host(`auth.portalgdu.com.uy`) && Path(`/o/userinfo`)"
+              service: mock-userinfo
+              priority: 200
+              entryPoints:
+                - https
+              tls:
+                certResolver: letsencrypt
+            # ============================================
+            # FIN TEMPORAL mock-userinfo
+            # ============================================
+
+            # ============================================
             # KEYCLOAK TEST
             # ============================================
             keycloak-test:
@@ -263,6 +279,13 @@ job "traefik" {
               loadBalancer:
                 servers:
                   - url: "http://127.0.0.1:3000"
+
+            # TEMPORAL mock-userinfo - REMOVER CUANDO NO SE NECESITE
+            mock-userinfo:
+              loadBalancer:
+                servers:
+                  - url: "http://127.0.0.1:19999"
+            # FIN TEMPORAL mock-userinfo
 
             # Legacy services (Docker existente)
             legacy-portal-gdu:
