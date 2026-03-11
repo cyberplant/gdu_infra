@@ -42,7 +42,7 @@ job "keycloak-test" {
       driver = "docker"
 
       config {
-        image        = "quay.io/keycloak/keycloak:24.0"
+        image        = "quay.io/keycloak/keycloak:21.1.1"
         network_mode = "host"
         
         command = "start-dev"
