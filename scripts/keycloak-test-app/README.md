@@ -64,4 +64,5 @@ Browser → /  →  Keycloak /auth?kc_idp_hint=gdu-analytics
 | `CLIENT_ID`    | `test-app`                 | Client ID registrado en Keycloak     |
 | `CLIENT_SECRET`| `""`                       | Secret (dejar vacío si es public)    |
 | `IDP_HINT`     | `gdu-analytics`            | Alias del Identity Provider en KC   |
-| `PORT`         | `5000`                     | Puerto local                         |
+| `HOST`         | `gdu.roar.uy`              | Hostname de la app (para redirect URI)|
+| `PORT`         | `8000`                     | Puerto local                         |

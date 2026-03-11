@@ -16,9 +16,10 @@ REALM            = os.getenv("REALM",            "master")
 CLIENT_ID        = os.getenv("CLIENT_ID",        "test-app")
 CLIENT_SECRET    = os.getenv("CLIENT_SECRET",    "")        # dejar vacío si es public client
 IDP_HINT         = os.getenv("IDP_HINT",         "gdu-analytics")  # alias del Identity Provider en KC
-PORT             = int(os.getenv("PORT",         "5000"))
+PORT             = int(os.getenv("PORT",         "8000"))
+HOST             = os.getenv("HOST",             "gdu.roar.uy")
 
-REDIRECT_URI     = f"http://localhost:{PORT}/callback"
+REDIRECT_URI     = f"http://{HOST}:{PORT}/callback"
 BASE_URL         = f"{KEYCLOAK_BASE}/realms/{REALM}/protocol/openid-connect"
 AUTH_URL         = f"{BASE_URL}/auth"
 TOKEN_URL        = f"{BASE_URL}/token"
@@ -193,7 +194,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 LOGOUT_URL
                 + "?"
                 + urllib.parse.urlencode({
-                    "post_logout_redirect_uri": f"http://localhost:{PORT}/",
+                    "post_logout_redirect_uri": f"http://{HOST}:{PORT}/",
                     "client_id": CLIENT_ID,
                     "id_token_hint": tokens.get("id_token", ""),
                 })
@@ -240,10 +241,10 @@ Antes de arrancar, asegurate de tener en Keycloak un Client con:
   Client ID    : {CLIENT_ID}
   Redirect URI : {REDIRECT_URI}
 
-Abriendo http://localhost:{PORT} ...
+Abriendo http://{HOST}:{PORT} ...
 """)
-    webbrowser.open(f"http://localhost:{PORT}")
-    server = http.server.HTTPServer(("localhost", PORT), Handler)
+    webbrowser.open(f"http://{HOST}:{PORT}")
+    server = http.server.HTTPServer(("0.0.0.0", PORT), Handler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
